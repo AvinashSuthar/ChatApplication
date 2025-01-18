@@ -50,6 +50,11 @@ const MessageBar = () => {
   const handleAddEmoji = (emoji) => {
     setMessage((msg) => msg + emoji.emoji);
   };
+  const handleEnter = (e) => {
+    if (e.key === "Enter") {
+      handleSendMessage();
+    }
+  };
 
   const handleAttachmentChange = async (e) => {
     try {
@@ -99,7 +104,10 @@ const MessageBar = () => {
           className="flex-1 p-5 bg-transparent rounded-md focus:border-none focus:outline-none"
           placeholder="Enter Message"
           value={message}
-          onChange={(e) => setMessage(e.target.value)}
+          onChange={(e) => {
+            setMessage(e.target.value)
+          }}
+          
         />
         <button
           onClick={handleAttachmentClick}
