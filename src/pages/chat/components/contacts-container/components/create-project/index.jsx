@@ -3,34 +3,28 @@ import { FaPlus } from "react-icons/fa";
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
-import Lottie from "react-lottie";
-import { animationDefaultOption, getColor } from "@/lib/utils";
 import { apiClient } from "@/lib/api-client";
 import {
-  CREATE_CHANNEL_ROUTE,
+  CREATE_PROJECT_ROUTE,
   GET_ALL_CONTACTS_ROUTE,
   SEARCH_CONTACTS_ROUTES,
 } from "@/utils/constants";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { Avatar, AvatarImage } from "@/components/ui/avatar";
 import { useAppStore } from "@/store";
 import { Button } from "@/components/ui/button";
 import MultipleSelector from "@/components/ui/MultipleSelect";
 
-const CreateChannel = () => {
-  const { setSelectedChatData, setSelectedChatType, addChannel } =
-    useAppStore();
-  const [newChannelModal, setnewChannelModal] = useState(false);
+const CreateProject = () => {
+  const [newProjectModal, setNewProjectModal] = useState(false);
+  const [projectName, setProjectName] = useState("");
+
+  const { addProject } = useAppStore();
   const [searchedContacts, setSearchedContacts] = useState([]);
   const [allContacts, setallContacts] = useState([]);
   const [selectedContacts, setselectedContacts] = useState([]);
-  const [channelName, setChannelName] = useState("");
 
   useEffect(() => {
     const getData = async () => {
@@ -42,22 +36,22 @@ const CreateChannel = () => {
     getData();
   }, []);
 
-  const createChannel = async () => {
+  const createProject = async () => {
     try {
-      if (channelName.length > 0 && selectedContacts.length > 0) {
+      if (projectName.length > 0 && selectedContacts.length > 0) {
         const res = await apiClient.post(
-          CREATE_CHANNEL_ROUTE,
+          CREATE_PROJECT_ROUTE,
           {
-            name: channelName,
+            name: projectName,
             members: selectedContacts.map((contact) => contact.value),
           },
           { withCredentials: true }
         );
         if (res.status === 201) {
-          setChannelName("");
+          setProjectName("");
           setselectedContacts([]);
-          setnewChannelModal(false);
-          addChannel(res.data.channel);
+          setNewProjectModal(false);
+          addProject(res.data.channel);
         }
       }
     } catch (error) {
@@ -90,23 +84,24 @@ const CreateChannel = () => {
       console.log(error);
     }
   };
+
   return (
     <>
       <FaPlus
-        onClick={(e) => setnewChannelModal(true)}
+        onClick={(e) => setNewProjectModal(true)}
         className="text-neutral-400 font-light text-opacity-90 text-start hover:text-neutral-100 cursor-pointer transition-all duration-300"
       />
-      <Dialog open={newChannelModal} onOpenChange={setnewChannelModal}>
+      <Dialog open={newProjectModal} onOpenChange={setNewProjectModal}>
         <DialogContent className="bg-[#181920] border-none text-white w-[400px] h-[400px] flex flex-col">
           <DialogHeader>
-            <DialogTitle>Create New Channel</DialogTitle>
+            <DialogTitle>Create New Project</DialogTitle>
           </DialogHeader>
           <div>
             <Input
-              onChange={(e) => setChannelName(e.target.value)}
-              placeholder="Channel Name"
+              onChange={(e) => setProjectName(e.target.value)}
+              placeholder="Project Name"
               className="rounded-lg p-6 bg-[#2c2e3b] border-none"
-              value={channelName}
+              value={projectName}
             />
           </div>
           <div>
@@ -126,9 +121,9 @@ const CreateChannel = () => {
           <div>
             <Button
               className="w-full bg-purple-700 hover:bg-purple-900 transition-all duration-300 m-auto"
-              onClick={createChannel}
+              onClick={createProject}
             >
-              Create Channel
+              Create Project
             </Button>
           </div>
         </DialogContent>
@@ -137,4 +132,4 @@ const CreateChannel = () => {
   );
 };
 
-export default CreateChannel;
+export default CreateProject;
